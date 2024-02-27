@@ -1,7 +1,57 @@
 ﻿@page "/"
+@rendermode InteractiveServer
+@using System.Net.Http;
+@using Newtonsoft.Json.Linq;
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
-Welcome to your new app!
+<button class="btn btn-primary" @onclick="GetFood">Click me</button>
+
+@if (imageSource is not null)
+{
+    <p>
+        <img src="@imageSource" />
+    </p>
+}
+
+
+@code {
+    private static string? imageSource;
+
+    public static async void GetFood()
+    {
+        string baseUrl = "https://www.themealdb.com/api/json/v1/1/random.php";
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var data = await content.ReadAsStringAsync();
+                        if (data != null)
+                        {
+                            Console.WriteLine("Data--------------{0}", data);
+                            JObject parsedData = JObject.Parse(data);
+                            string imageLink = (string)parsedData["meals"][0]["strMealThumb"];
+                            Console.WriteLine(imageLink + "iiiiiiiiiiiiiii");
+                            imageSource = imageLink;
+                        }
+                        else
+                        {
+                            Console.WriteLine("No Data--------------");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Exception Hit-------------");
+            Console.Write(exception);
+        }
+    }
+}

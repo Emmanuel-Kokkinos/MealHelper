@@ -1,19 +1,50 @@
 ﻿@page "/counter"
 @rendermode InteractiveServer
+@using System.Net.Http;
+@using Newtonsoft.Json.Linq;
 
 <PageTitle>Counter</PageTitle>
 
 <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
-
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<button class="btn btn-primary" @onclick="GetFood">Click me</button>
 
 @code {
-    private int currentCount = 0;
+    [Parameter]
+    public string baseUrl { get; set; } = "https://www.themealdb.com/api/json/v1/1/categories.php";
 
-    private void IncrementCount()
+    public async Task<JObject> GetFood()
     {
-        currentCount++;
+        //string baseUrl = "https://www.themealdb.com/api/json/v1/1/categories.php";
+        JObject returnData = new JObject{};
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var data = await content.ReadAsStringAsync();
+                        if (data != null)
+                        {
+                            Console.WriteLine("Data--------------{0}", data);
+                            returnData = JObject.Parse(data);
+                        }
+                        else
+                        {
+                            Console.WriteLine("No Data--------------");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Exception Hit-------------");
+            Console.Write(exception);
+        }
+
+        return returnData;
     }
 }

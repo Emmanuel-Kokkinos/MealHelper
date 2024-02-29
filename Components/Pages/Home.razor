@@ -5,22 +5,40 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Choosing Meals</h1>
+<h2>Made Easy!</h2>
 
-<button class="btn btn-primary" @onclick="GetFood">Click me</button>
-
-@if (imageSource is not null)
-{
+<div id="imageBox">
+    <img id="randomImage" src="@imageSource" />
+</div>
+<div id="textBox">
     <p>
-        <img src="@imageSource" />
+        New to cooking? Can't decide what to make next? Just want to try some new dishes?
+        Then this is the place for you! You can browse countless meal options with cooking directions,
+        video tutorials and food images to help you decide. 
+        <br /><br />
+        Once you've found a dish you like, you can add it to your shopping list for easy access to 
+        which ingredients you need to get. And to top it off, you can save your favorite dishes for 
+        future use. 
+        <br /><br />
+        Come give it a try and expand your culinary experiences!
     </p>
-}
+</div>
 
 
 @code {
-    private static string? imageSource;
 
-    public static async void GetFood()
+    private static string? imageSource = "https://www.themealdb.com/images/media/meals/rwuyqx1511383174.jpg";
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            GetFoodImage();
+        }
+    }
+
+    public static async void GetFoodImage()
     {
         string baseUrl = "https://www.themealdb.com/api/json/v1/1/random.php";
         try
@@ -34,15 +52,13 @@
                         var data = await content.ReadAsStringAsync();
                         if (data != null)
                         {
-                            Console.WriteLine("Data--------------{0}", data);
                             JObject parsedData = JObject.Parse(data);
                             string imageLink = (string)parsedData["meals"][0]["strMealThumb"];
-                            Console.WriteLine(imageLink + "iiiiiiiiiiiiiii");
                             imageSource = imageLink;
                         }
                         else
                         {
-                            Console.WriteLine("No Data--------------");
+                            Console.WriteLine("No Data Found");
                         }
                     }
                 }
@@ -50,7 +66,7 @@
         }
         catch (Exception exception)
         {
-            Console.WriteLine("Exception Hit-------------");
+            Console.WriteLine("Exception Hit");
             Console.Write(exception);
         }
     }

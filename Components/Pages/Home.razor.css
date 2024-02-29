@@ -1,0 +1,54 @@
+﻿h1 {
+    width: 85%;
+    font-family: cursive;
+    text-align: center;
+    font-weight: 700;
+    font-size: 125px;
+    background: linear-gradient(0deg, rgba(238, 174, 174, 1) 0%, rgba(233, 211, 148, 1) 100%);
+}
+
+h2 {
+    width: 50%;
+    float: right;
+    font-family: cursive;
+    text-align: center;
+    margin-right: 450px;
+    font-weight: 600;
+    font-size: 80px;
+    background: linear-gradient(0deg, rgba(233, 211, 148, 1) 0%, rgba(238, 174, 174, 1) 100%);
+}
+
+p {
+    font-size: x-large;
+    font-family: Courier New, Courier, monospace;
+    font-weight: 500;
+    text-align: center;
+}
+
+#textBox {
+    float: right;
+    width: 700px;
+    height: 700px;
+    padding: 30px;
+    margin: 45px 40px 35px 20px;
+    background: linear-gradient(white, white) padding-box, linear-gradient(0deg, rgba(238, 174, 174, 1) 0%, rgba(233, 211, 148, 1) 100%) border-box;
+    border: 30px solid transparent;
+    border-radius: 35px;
+}
+
+#imageBox {
+    float: left;
+    width: 740px;
+    height: 740px;
+    margin: 30px 20px 30px 40px;
+    background: linear-gradient(white, white) padding-box, linear-gradient(0deg, rgba(238, 174, 174, 1) 0%, rgba(233, 211, 148, 1) 100%) border-box;
+    border: 20px solid transparent;
+    border-radius: 35px
+}
+
+#randomImage {
+    height: 700px;
+    width: 700px;
+    object-fit: fill;
+    border-radius: 15px;
+}

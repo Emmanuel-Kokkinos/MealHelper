@@ -22,4 +22,8 @@
     <_ContentIncludedByDefault Remove="Components\ApiCall.razor" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\MealHelperData\MealHelperData.csproj" />
+  </ItemGroup>
+
 </Project>

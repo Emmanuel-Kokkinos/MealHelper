@@ -1,8 +1,57 @@
 ﻿@page "/favorites"
 @rendermode InteractiveServer
 
-<h3>Favorites</h3>
+@using MealHelperData;
+@using MealHelperData.Models;
+
+@inject IMealData _db;
+
+<h1>Favorites</h1>
+
+<button class="btn btn-primary" onclick="FavoriteThisMeal">Add Fav</button>
+
+<h4>Current Favorites</h4>
+@if(meals is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var meal in meals)
+            {
+                <tr>
+                    <td>@meal.MealId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private List<MealModel> meals;
 
+    protected override async Task OnInitializedAsync()
+    {
+        meals = await _db.GetMeals();
+    }
+
+    private void FavoriteThisMeal()
+    {
+        MealModel meal = new MealModel
+            {
+                Id = 1,
+                MealId = 52772,
+                InShoppingList = false,
+                Favorite = true,
+            };
+
+        _db.InsertMeal(meal);
+    }
 }

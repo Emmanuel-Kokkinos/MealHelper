@@ -1,10 +1,13 @@
 using MealHelper.Components;
+using MealHelperData;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
+builder.Services.AddTransient<IMealData, MealData>();
 
 var app = builder.Build();
 

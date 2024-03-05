@@ -1,0 +1,11 @@
+﻿#container {
+    padding: 10px;
+}
+
+.card {
+    width: 300px;
+}
+
+.card-title {
+    text-align:center;
+}

@@ -1,8 +1,89 @@
 ﻿@page "/search"
 @rendermode InteractiveServer
 
+@using System.Net.Http;
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq;
+
 <h3>Search</h3>
 
-@code {
+@if (getDataError || meals is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div id="container">
+        @foreach (Meal meal in meals)
+        {
+            <Card mealName=@meal.name mealImage=@meal.image></Card>
+        }
+    </div>
+}
 
+@code {
+    private bool getDataError;
+    private bool shouldRender;
+    private List<Meal> meals = new List<Meal>();
+
+    protected override bool ShouldRender() => shouldRender;
+
+    public class Meal
+    {
+        public string name { get; set; }
+        public string image { get; set; }
+
+        public Meal(string name, string image)
+        {
+            this.name = name;
+            this.image = image;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        string baseUrl = "https://www.themealdb.com/api/json/v1/1/search.php?f=a";
+        await LoadAllMeals(baseUrl);
+    }
+
+    public async Task LoadAllMeals(string apiUrl)
+    {
+        string baseUrl = apiUrl;
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var jsonData = await content.ReadAsStringAsync();
+
+                        if (jsonData != null)
+                        {
+                            JObject parsedData = JObject.Parse(jsonData);
+
+                            foreach (var data in parsedData["meals"])
+                            {
+                                meals.Add(new Meal((string)data["strMeal"], (string)data["strMealThumb"]));
+                            }
+                        }
+                        else
+                        {
+                            getDataError = true;
+                            Console.WriteLine("No Data Found");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            getDataError = true;
+            Console.WriteLine("Exception Hit");
+            Console.Write(exception);
+        }
+
+        shouldRender = true;
+    }
 }

@@ -1,0 +1,31 @@
+﻿@using MealHelperData;
+@using MealHelperData.Models;
+
+@inject IMealData _db;
+
+<div id="container">
+    <div class="card m-4">
+        <img class="card-img-top" src="@mealImage">
+        <div class="card-body">
+            <h3 class="card-title">@mealName</h3>
+            <button class="btn btn-primary" onclick="AddToShoppingList">Add to List</button>
+            <a href="details" class="btn btn-primary">View Details</a>
+            <button class="btn btn-primary" onclick="AddToFavorites">Favorite</button>
+        </div>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string mealName { get; set; } 
+    [Parameter]
+    public string mealImage { get; set; }
+
+    private void AddToFavorites()
+    {
+        
+    }
+    private void AddToShoppingList()
+    {
+
+    }
+}

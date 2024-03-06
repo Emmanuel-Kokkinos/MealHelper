@@ -4,6 +4,10 @@
     align-content: space-evenly;
 }
 
-h3 {
+h1 {
     text-align: center;
+}
+
+::deep .dropDown {
+    width: 200px;
 }

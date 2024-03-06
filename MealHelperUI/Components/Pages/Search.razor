@@ -7,50 +7,29 @@
 
 <PageTitle>Meal Search</PageTitle>
 
-<h3>Find the right meal for you!</h3>
+<h1>Find the right meal for you!</h1>
 
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Food Category
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-        <button class="dropdown-item" type="button" value="Beef" @onchange="ChangeCategory">Beef</button>
-        <button class="dropdown-item" type="button" value="Breakfast" @onchange="ChangeCategory">Breakfast</button>
-        <button class="dropdown-item" type="button" value="Chicken" @onchange="ChangeCategory">Chicken</button>
-        <button class="dropdown-item" type="button" value="Dessert" @onchange="ChangeCategory">Dessert</button>
-        <button class="dropdown-item" type="button" value="Goat" @onchange="ChangeCategory">Goat</button>
-        <button class="dropdown-item" type="button" value="Lamb" @onchange="ChangeCategory">Lamb</button>
-        <button class="dropdown-item" type="button" value="Miscellaneous" @onchange="ChangeCategory">Miscellaneous</button>
-        <button class="dropdown-item" type="button" value="Pasta" @onchange="ChangeCategory">Pasta</button>
-        <button class="dropdown-item" type="button" value="Pork" @onchange="ChangeCategory">Pork</button>
-        <button class="dropdown-item" type="button" value="Seafood" @onchange="ChangeCategory">Seafood</button>
-        <button class="dropdown-item" type="button" value="Side" @onchange="ChangeCategory">Side</button>
-        <button class="dropdown-item" type="button" value="Starter" @onchange="ChangeCategory">Starter</button>
-        <button class="dropdown-item" type="button" value="Vegan" @onchange="ChangeCategory">Vegan</button>
-        <button class="dropdown-item" type="button" value="Vegetarian" @onchange="ChangeCategory">Vegetarian</button>
-    </div>
-</div>
-
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Food Category
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <button class="dropdown-item" type="button" value="Beef" @onchange="ChangeCategory">Beef</button>
-        <button class="dropdown-item" type="button" value="Breakfast" @onchange="ChangeCategory">Breakfast</button>
-        <button class="dropdown-item" type="button" value="Chicken" @onchange="ChangeCategory">Chicken</button>
-        <button class="dropdown-item" type="button" value="Dessert" @onchange="ChangeCategory">Dessert</button>
-        <button class="dropdown-item" type="button" value="Goat" @onchange="ChangeCategory">Goat</button>
-        <button class="dropdown-item" type="button" value="Lamb" @onchange="ChangeCategory">Lamb</button>
-        <button class="dropdown-item" type="button" value="Miscellaneous" @onchange="ChangeCategory">Miscellaneous</button>
-        <button class="dropdown-item" type="button" value="Pasta" @onchange="ChangeCategory">Pasta</button>
-        <button class="dropdown-item" type="button" value="Pork" @onchange="ChangeCategory">Pork</button>
-        <button class="dropdown-item" type="button" value="Seafood" @onchange="ChangeCategory">Seafood</button>
-        <button class="dropdown-item" type="button" value="Side" @onchange="ChangeCategory">Side</button>
-        <button class="dropdown-item" type="button" value="Starter" @onchange="ChangeCategory">Starter</button>
-        <button class="dropdown-item" type="button" value="Vegan" @onchange="ChangeCategory">Vegan</button>
-        <button class="dropdown-item" type="button" value="Vegetarian" @onchange="ChangeCategory">Vegetarian</button>
-    </div>
+<div>
+    <Select class="dropDown" TValue="string" SelectedValue="@foodCategory" SelectedValueChanged="@ChangeCategory">
+        <SelectGroup Label="Meat">
+            <SelectItem Value=@("Beef")>Beef</SelectItem>
+            <SelectItem Value=@("Chicken")>Chicken</SelectItem>
+            <SelectItem Value=@("Goat")>Goat</SelectItem>
+            <SelectItem Value=@("Lamb")>Lamb</SelectItem>
+            <SelectItem Value=@("Pork")>Pork</SelectItem>
+            <SelectItem Value=@("Seafood")>Seafood</SelectItem>
+        </SelectGroup>
+        <SelectGroup Label="Other">
+            <SelectItem Value=@("Breakfast")>Breakfast</SelectItem>
+            <SelectItem Value=@("Dessert")>Dessert</SelectItem>
+            <SelectItem Value=@("Miscellaneous")>Miscellaneous</SelectItem>
+            <SelectItem Value=@("Pasta")>Pasta</SelectItem>
+            <SelectItem Value=@("Side")>Side</SelectItem>
+            <SelectItem Value=@("Starter")>Starter</SelectItem>
+            <SelectItem Value=@("Vegan")>Vegan</SelectItem>
+            <SelectItem Value=@("Vegetarian")>Vegetarian</SelectItem>
+        </SelectGroup>
+    </Select>
 </div>
 
 @if (getDataError || meals is null)
@@ -62,12 +41,13 @@ else
     <div id="container">
         @foreach (Meal meal in meals)
         {
-            <Card mealName=@meal.name mealImage=@meal.image></Card>
+            <MealCard mealName=@meal.name mealImage=@meal.image></MealCard>
         }
     </div>
 }
 
 @code {
+    private string? foodCategory;
     private bool getDataError;
     private bool shouldRender;
     private List<Meal> meals = new List<Meal>();
@@ -92,10 +72,9 @@ else
         await LoadAllMeals(baseUrl);
     }
 
-    public async Task ChangeCategory(ChangeEventArgs args)
+    public async Task ChangeCategory(string foodCategory)
     {
-        string category = args.Value.ToString();
-        string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=" + category + "";
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=" + foodCategory + "";
         await LoadAllMeals(apiUrl);
     }
 

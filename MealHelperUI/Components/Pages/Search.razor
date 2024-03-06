@@ -1,11 +1,57 @@
 ﻿@page "/search"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @using System.Net.Http;
 @using Newtonsoft.Json
 @using Newtonsoft.Json.Linq;
 
-<h3>Search</h3>
+<PageTitle>Meal Search</PageTitle>
+
+<h3>Find the right meal for you!</h3>
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Food Category
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <button class="dropdown-item" type="button" value="Beef" @onchange="ChangeCategory">Beef</button>
+        <button class="dropdown-item" type="button" value="Breakfast" @onchange="ChangeCategory">Breakfast</button>
+        <button class="dropdown-item" type="button" value="Chicken" @onchange="ChangeCategory">Chicken</button>
+        <button class="dropdown-item" type="button" value="Dessert" @onchange="ChangeCategory">Dessert</button>
+        <button class="dropdown-item" type="button" value="Goat" @onchange="ChangeCategory">Goat</button>
+        <button class="dropdown-item" type="button" value="Lamb" @onchange="ChangeCategory">Lamb</button>
+        <button class="dropdown-item" type="button" value="Miscellaneous" @onchange="ChangeCategory">Miscellaneous</button>
+        <button class="dropdown-item" type="button" value="Pasta" @onchange="ChangeCategory">Pasta</button>
+        <button class="dropdown-item" type="button" value="Pork" @onchange="ChangeCategory">Pork</button>
+        <button class="dropdown-item" type="button" value="Seafood" @onchange="ChangeCategory">Seafood</button>
+        <button class="dropdown-item" type="button" value="Side" @onchange="ChangeCategory">Side</button>
+        <button class="dropdown-item" type="button" value="Starter" @onchange="ChangeCategory">Starter</button>
+        <button class="dropdown-item" type="button" value="Vegan" @onchange="ChangeCategory">Vegan</button>
+        <button class="dropdown-item" type="button" value="Vegetarian" @onchange="ChangeCategory">Vegetarian</button>
+    </div>
+</div>
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Food Category
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <button class="dropdown-item" type="button" value="Beef" @onchange="ChangeCategory">Beef</button>
+        <button class="dropdown-item" type="button" value="Breakfast" @onchange="ChangeCategory">Breakfast</button>
+        <button class="dropdown-item" type="button" value="Chicken" @onchange="ChangeCategory">Chicken</button>
+        <button class="dropdown-item" type="button" value="Dessert" @onchange="ChangeCategory">Dessert</button>
+        <button class="dropdown-item" type="button" value="Goat" @onchange="ChangeCategory">Goat</button>
+        <button class="dropdown-item" type="button" value="Lamb" @onchange="ChangeCategory">Lamb</button>
+        <button class="dropdown-item" type="button" value="Miscellaneous" @onchange="ChangeCategory">Miscellaneous</button>
+        <button class="dropdown-item" type="button" value="Pasta" @onchange="ChangeCategory">Pasta</button>
+        <button class="dropdown-item" type="button" value="Pork" @onchange="ChangeCategory">Pork</button>
+        <button class="dropdown-item" type="button" value="Seafood" @onchange="ChangeCategory">Seafood</button>
+        <button class="dropdown-item" type="button" value="Side" @onchange="ChangeCategory">Side</button>
+        <button class="dropdown-item" type="button" value="Starter" @onchange="ChangeCategory">Starter</button>
+        <button class="dropdown-item" type="button" value="Vegan" @onchange="ChangeCategory">Vegan</button>
+        <button class="dropdown-item" type="button" value="Vegetarian" @onchange="ChangeCategory">Vegetarian</button>
+    </div>
+</div>
 
 @if (getDataError || meals is null)
 {
@@ -42,12 +88,20 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        string baseUrl = "https://www.themealdb.com/api/json/v1/1/search.php?f=a";
+        string baseUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=Beef";
         await LoadAllMeals(baseUrl);
+    }
+
+    public async Task ChangeCategory(ChangeEventArgs args)
+    {
+        string category = args.Value.ToString();
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=" + category + "";
+        await LoadAllMeals(apiUrl);
     }
 
     public async Task LoadAllMeals(string apiUrl)
     {
+        meals.Clear();
         string baseUrl = apiUrl;
         try
         {

@@ -3,3 +3,7 @@
     flex-wrap: wrap;
     align-content: space-evenly;
 }
+
+h3 {
+    text-align: center;
+}

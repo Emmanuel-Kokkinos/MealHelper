@@ -1,4 +1,6 @@
 ﻿#container {
+    position: absolute;
+    margin-top: 80px;
     display: flex;
     flex-wrap: wrap;
     align-content: space-evenly;
@@ -9,5 +11,13 @@ h1 {
 }
 
 ::deep .dropDown {
-    width: 200px;
+    float: left;
+    width: 250px;
+    margin-left: 40px;
+}
+
+.searchBar {
+    float: right;
+    width: 350px;
+    margin-right: 40px;
 }

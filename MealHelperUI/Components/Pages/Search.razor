@@ -9,7 +9,7 @@
 
 <h1>Find the right meal for you!</h1>
 
-<div>
+<div class="mt-xl-3">
     <Select class="dropDown" TValue="string" SelectedValue="@foodCategory" SelectedValueChanged="@ChangeCategory">
         <SelectGroup Label="Meat">
             <SelectItem Value=@("Beef")>Beef</SelectItem>
@@ -30,6 +30,11 @@
             <SelectItem Value=@("Vegetarian")>Vegetarian</SelectItem>
         </SelectGroup>
     </Select>
+
+    <div class="input-group searchBar">
+        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" @bind-value="@foodIngredient" />
+        <button class="btn btn-outline-primary" @onclick="@SearchForMeal">search</button>
+    </div>
 </div>
 
 @if (getDataError || meals is null)
@@ -47,7 +52,8 @@ else
 }
 
 @code {
-    private string? foodCategory;
+    private string? foodCategory = "Beef";
+    private string? foodIngredient;
     private bool getDataError;
     private bool shouldRender;
     private List<Meal> meals = new List<Meal>();
@@ -75,6 +81,12 @@ else
     public async Task ChangeCategory(string foodCategory)
     {
         string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=" + foodCategory + "";
+        await LoadAllMeals(apiUrl);
+    }
+
+    public async Task SearchForMeal()
+    {
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?i=" + foodIngredient + "";
         await LoadAllMeals(apiUrl);
     }
 

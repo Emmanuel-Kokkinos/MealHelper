@@ -16,19 +16,19 @@ namespace MealHelperData
             this._db = db;
         }
 
-        public Task<List<MealModel>> GetMeals()
+        public Task<List<MealModel>> GetFavoriteMeals()
         {
-            string sql = "select * from dbo.Meals";
+            string sql = "select * from dbo.Meals where Favorite = 1;";
 
             return _db.LoadData<MealModel, dynamic>(sql, new { });
         }
 
-        public Task InsertMeal(MealModel meal)
+        public Task UpdateFavoriteMeal(MealModel meal)
         {
-            /*string sql = @"insert into dbo.Meals (Id, MealId, InShoppingList, Favorite)
-                           values (@Id, @MealId, @InShoppingList, @Favorite)";*/
-            string sql = @"insert into dbo.Meals (Id, MealId, InShoppingList, Favorite)
-                           values (1, 52772, false, true)";
+            string sql = @"MERGE INTO dbo.Meals USING (VALUES (@MealId, @Favorite)) AS source (MealId, Favorite)
+                         ON dbo.Meals.MealId = source.MealId 
+                         WHEN MATCHED THEN UPDATE SET Favorite = source.Favorite
+                         WHEN NOT MATCHED THEN INSERT (MealId, Favorite) VALUES (source.MealId, source.Favorite);";
 
             return _db.SaveData(sql, meal);
         }

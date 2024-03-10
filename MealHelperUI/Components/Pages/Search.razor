@@ -32,7 +32,8 @@
     </Select>
 
     <div class="input-group searchBar">
-        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" @bind-value="@foodIngredient" />
+        <input type="search" class="form-control rounded" placeholder="Search" aria-label="Search" 
+            aria-describedby="search-addon" @bind-value="@foodIngredient" @onkeydown="@pressEnter" />
         <button class="btn btn-outline-primary" @onclick="@SearchForMeal">search</button>
     </div>
 </div>
@@ -46,7 +47,7 @@ else
     <div id="container">
         @foreach (Meal meal in meals)
         {
-            <MealCard mealName=@meal.name mealImage=@meal.image></MealCard>
+            <MealCard mealName=@meal.name mealImage=@meal.image mealId="@meal.mealId"></MealCard>
         }
     </div>
 }
@@ -64,11 +65,13 @@ else
     {
         public string name { get; set; }
         public string image { get; set; }
+        public string mealId { get; set; }
 
-        public Meal(string name, string image)
+        public Meal(string name, string image, string mealId)
         {
             this.name = name;
             this.image = image;
+            this.mealId = mealId;
         }
     }
 
@@ -82,6 +85,14 @@ else
     {
         string apiUrl = "https://www.themealdb.com/api/json/v1/1/filter.php?c=" + foodCategory + "";
         await LoadAllMeals(apiUrl);
+    }
+
+    public async Task pressEnter(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            await SearchForMeal();
+        }
     }
 
     public async Task SearchForMeal()
@@ -110,7 +121,8 @@ else
 
                             foreach (var data in parsedData["meals"])
                             {
-                                meals.Add(new Meal((string)data["strMeal"], (string)data["strMealThumb"]));
+                                meals.Add(new Meal((string)data["strMeal"], 
+                                    (string)data["strMealThumb"], (string)data["idMeal"]));
                             }
                         }
                         else

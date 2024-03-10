@@ -8,21 +8,31 @@
         <a href="details"><img class="card-img-top" src="@mealImage"></a>
         <div class="card-body">
             <h3 class="card-title">@mealName</h3>
-            <button class="btn btn-primary listButton" onclick="AddToShoppingList">Add to List</button>
-            <button class="btn btn-primary favoriteButton" onclick="AddToFavorites">Favorite</button>
+            <button class="btn btn-primary listButton" @onclick="@AddToShoppingList">Add to List</button>
+            <button class="btn btn-primary favoriteButton" @onclick="@AddToFavorites">Favorite</button>
         </div>
     </div>
 </div>
+
 @code {
     [Parameter]
     public string mealName { get; set; } 
     [Parameter]
     public string mealImage { get; set; }
+    [Parameter]
+    public string mealId { get; set; }
 
     private void AddToFavorites()
     {
-        
+        MealModel meal = new MealModel
+            {
+                MealId = Int32.Parse(mealId),
+                Favorite = true,
+            };
+
+        _db.UpdateFavoriteMeal(meal);
     }
+
     private void AddToShoppingList()
     {
 

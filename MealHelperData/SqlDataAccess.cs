@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MealHelperData
 {
@@ -13,7 +16,7 @@ namespace MealHelperData
 
         public SqlDataAccess(IConfiguration config)
         {
-            this._config = config;
+            _config = config;
         }
 
         public async Task<List<T>> LoadData<T, U>(string sql, U parameters)

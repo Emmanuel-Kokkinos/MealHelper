@@ -4,7 +4,7 @@ namespace MealHelperData
 {
     public interface IMealData
     {
-        Task<List<MealModel>> GetMeals();
-        Task InsertMeal(MealModel meal);
+        Task<List<MealModel>> GetFavoriteMeals();
+        Task UpdateFavoriteMeal(MealModel meal);
     }
 }

@@ -1,57 +1,97 @@
 ﻿@page "/favorites"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @using MealHelperData;
 @using MealHelperData.Models;
+@using Newtonsoft.Json.Linq
 
 @inject IMealData _db;
 
 <h1>Favorites</h1>
 
-<button class="btn btn-primary" onclick="FavoriteThisMeal">Add Fav</button>
-
 <h4>Current Favorites</h4>
-@if(meals is null)
+@if (getDataError || dbMeals is null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var meal in meals)
-            {
-                <tr>
-                    <td>@meal.MealId</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @foreach (var dbMeal in dbMeals)
+    {
+        var a = FindMealInfo(@dbMeal.MealId);
+    }
+    <div id="container">
+        @foreach (var favMeal in favoriteMeals)
+        {
+            <MealCard mealName=@favMeal.name mealImage=@favMeal.image mealId="@favMeal.mealId"></MealCard>
+        }
+    </div>
 }
 
 @code {
-    private List<MealModel> meals;
+    private List<MealModel>? dbMeals;
+    private bool getDataError;
+    private bool shouldRender;
+    private List<Meal> favoriteMeals = new List<Meal>();
+
+    public class Meal
+    {
+        public string name { get; set; }
+        public string image { get; set; }
+        public string mealId { get; set; }
+
+        public Meal(string name, string image, string mealId)
+        {
+            this.name = name;
+            this.image = image;
+            this.mealId = mealId;
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        meals = await _db.GetMeals();
+        dbMeals = await _db.GetFavoriteMeals();
     }
 
-    private void FavoriteThisMeal()
+    public async Task FindMealInfo(int mealId)
     {
-        MealModel meal = new MealModel
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId;
+        try
+        {
+            using (HttpClient client = new HttpClient())
             {
-                Id = 1,
-                MealId = 52772,
-                InShoppingList = false,
-                Favorite = true,
-            };
+                using (HttpResponseMessage res = await client.GetAsync(apiUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var jsonData = await content.ReadAsStringAsync();
 
-        _db.InsertMeal(meal);
+                        if (jsonData != null)
+                        {
+                            JObject parsedData = JObject.Parse(jsonData);
+
+                            foreach (var data in parsedData["meals"])
+                            {
+                                favoriteMeals.Add(new Meal((string)data["strMeal"], (string)data["strMealThumb"],
+                                (string)data["idMeal"]));
+                            }
+                        }
+                        else
+                        {
+                            getDataError = true;
+                            Console.WriteLine("No Data Found");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            getDataError = true;
+            Console.WriteLine("Exception Hit");
+            Console.Write(exception);
+        }
+
+        shouldRender = true;
     }
 }

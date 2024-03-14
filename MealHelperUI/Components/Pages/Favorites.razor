@@ -10,29 +10,29 @@
 <h1>Favorites</h1>
 
 <h4>Current Favorites</h4>
-@if (getDataError || dbMeals is null)
+
+@if (!favoriteMeals.Any())
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    @foreach (var dbMeal in dbMeals)
-    {
-        var a = FindMealInfo(@dbMeal.MealId);
-    }
     <div id="container">
         @foreach (var favMeal in favoriteMeals)
         {
-            <MealCard mealName=@favMeal.name mealImage=@favMeal.image mealId="@favMeal.mealId"></MealCard>
+            <MealCard mealName=@favMeal.name mealImage=@favMeal.image mealId="@favMeal.mealId" />
         }
     </div>
 }
 
 @code {
-    private List<MealModel>? dbMeals;
+    private static readonly HttpClient HttpClient = new HttpClient();
+    private List<MealModel> dbMeals = new List<MealModel>();
     private bool getDataError;
-    private bool shouldRender;
+    private bool shouldRender = false;
     private List<Meal> favoriteMeals = new List<Meal>();
+
+    protected override bool ShouldRender() => shouldRender;
 
     public class Meal
     {
@@ -51,6 +51,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         dbMeals = await _db.GetFavoriteMeals();
+        await SetMealList();
+    }
+
+    public async Task SetMealList()
+    {
+        foreach(MealModel dbMeal in dbMeals)
+        {
+            await FindMealInfo(dbMeal.MealId);
+        }
     }
 
     public async Task FindMealInfo(int mealId)
@@ -58,29 +67,26 @@ else
         string apiUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId;
         try
         {
-            using (HttpClient client = new HttpClient())
+            using (HttpResponseMessage res = await HttpClient.GetAsync(apiUrl))
             {
-                using (HttpResponseMessage res = await client.GetAsync(apiUrl))
+                using (HttpContent content = res.Content)
                 {
-                    using (HttpContent content = res.Content)
+                    var jsonData = await content.ReadAsStringAsync();
+
+                    if (jsonData != null)
                     {
-                        var jsonData = await content.ReadAsStringAsync();
+                        JObject parsedData = JObject.Parse(jsonData);
 
-                        if (jsonData != null)
+                        foreach (var data in parsedData["meals"])
                         {
-                            JObject parsedData = JObject.Parse(jsonData);
-
-                            foreach (var data in parsedData["meals"])
-                            {
-                                favoriteMeals.Add(new Meal((string)data["strMeal"], (string)data["strMealThumb"],
-                                (string)data["idMeal"]));
-                            }
+                            favoriteMeals.Add(new Meal((string)data["strMeal"], (string)data["strMealThumb"],
+                            (string)data["idMeal"]));
                         }
-                        else
-                        {
-                            getDataError = true;
-                            Console.WriteLine("No Data Found");
-                        }
+                    }
+                    else
+                    {
+                        getDataError = true;
+                        Console.WriteLine("No Data Found");
                     }
                 }
             }

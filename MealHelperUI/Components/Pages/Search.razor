@@ -56,10 +56,7 @@ else
     private string? foodCategory = "Beef";
     private string? foodIngredient;
     private bool getDataError;
-    private bool shouldRender;
     private List<Meal> meals = new List<Meal>();
-
-    protected override bool ShouldRender() => shouldRender;
 
     public class Meal
     {
@@ -140,7 +137,5 @@ else
             Console.WriteLine("Exception Hit");
             Console.Write(exception);
         }
-
-        shouldRender = true;
     }
 }

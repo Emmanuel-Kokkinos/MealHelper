@@ -5,11 +5,13 @@
 
 <div id="container">
     <div class="card m-4">
-        <a href="details"><img class="card-img-top" src="@mealImage"></a>
+        <a href="details/@mealId"><img class="card-img-top" src="@mealImage"></a>
         <div class="card-body">
             <h3 class="card-title">@mealName</h3>
             <button class="btn btn-primary listButton" @onclick="@AddToShoppingList">Add to List</button>
-            <button class="btn btn-primary favoriteButton" @onclick="@AddToFavorites">Favorite</button>
+            <button class="btn btn-primary favoriteButton" @onclick="@(favorited ? @RemoveFromFavorites : @AddToFavorites)">
+                <Blazorise.Icon Name="@(favorited ? IconName.TimesCircle : IconName.Heart)" />
+            </button>
         </div>
     </div>
 </div>
@@ -21,9 +23,31 @@
     public string mealImage { get; set; }
     [Parameter]
     public string mealId { get; set; }
+    private bool favorited;
 
-    private void AddToFavorites()
+    protected override async Task OnInitializedAsync()
     {
+        MealModel meal = new MealModel
+            {
+                MealId = Int32.Parse(mealId),
+            };
+
+        List<MealModel> favorites = await _db.CheckFavorite(meal);
+
+        if (favorites.Any())
+        {
+            favorited = favorites[0].Favorite;
+        }
+        else
+        {
+            favorited = false;
+        }
+    }
+
+    private Task AddToFavorites()
+    {
+        favorited = true;
+
         MealModel meal = new MealModel
             {
                 MealId = Int32.Parse(mealId),
@@ -31,6 +55,23 @@
             };
 
         _db.UpdateFavoriteMeal(meal);
+
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveFromFavorites()
+    {
+        favorited = false;
+
+        MealModel meal = new MealModel
+            {
+                MealId = Int32.Parse(mealId),
+                Favorite = false,
+            };
+
+        _db.UpdateFavoriteMeal(meal);
+
+        return Task.CompletedTask;
     }
 
     private void AddToShoppingList()

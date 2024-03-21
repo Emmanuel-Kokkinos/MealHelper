@@ -32,5 +32,12 @@ namespace MealHelperData
 
             return _db.SaveData(sql, meal);
         }
+
+        public Task<List<MealModel>> CheckFavorite(MealModel meal)
+        {
+            string sql = @"SELECT * FROM dbo.Meals 
+                           WHERE MealId=" + meal.MealId + ";";
+            return _db.LoadData<MealModel, dynamic>(sql, new { });
+        }
     }
 }

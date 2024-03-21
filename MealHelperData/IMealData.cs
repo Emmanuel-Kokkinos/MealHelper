@@ -6,5 +6,6 @@ namespace MealHelperData
     {
         Task<List<MealModel>> GetFavoriteMeals();
         Task UpdateFavoriteMeal(MealModel meal);
+        Task<List<MealModel>> CheckFavorite(MealModel mealId);
     }
 }

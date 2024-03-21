@@ -1,8 +1,97 @@
-﻿@page "/details"
+﻿@page "/details/{mealId}"
+@using Newtonsoft.Json.Linq
 @rendermode InteractiveServer
 
 <h3>Details</h3>
 
-@code {
+@if (mealId is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>@name</p>
+    <p>@foodLocation</p>
+    <p>@cookingInstructions</p>
+    <img src="@image"/>
+    @for (int i = 0; i < ingredients.Count; i++)
+    {
+        <li>@ingredients[i]</li>
+    }
+    @for (int i = 0; i < measurements.Count; i++)
+    {
+        <li>@measurements[i]</li>
+    }
+}
 
+@code {
+    private bool getDataError;
+    [Parameter]
+    public string mealId { get; set; }
+    private string? name;
+    private string? foodLocation;
+    private string? cookingInstructions;
+    private string? image;
+    private List<string>? ingredients = new List<string>();
+    private List<string>? measurements = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + mealId;
+        await LoadMealInfo(apiUrl);
+    }
+
+    public async Task LoadMealInfo(string apiUrl)
+    {
+        string baseUrl = apiUrl;
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var jsonData = await content.ReadAsStringAsync();
+
+                        if (jsonData != null)
+                        {
+                            JObject parsedData = JObject.Parse(jsonData);
+
+                            foreach (var data in parsedData["meals"])
+                            {
+                                name = (string)data["strMeal"];
+                                foodLocation = (string)data["strArea"];
+                                cookingInstructions = (string)data["strInstructions"];
+                                image = (string)data["strMealThumb"];
+
+                                for(int i = 1; i <= 20; i++)
+                                {
+                                    ingredients.Add((string)data["strIngredient" + i]);
+                                }
+                                for (int i = 1; i <= 20; i++)
+                                {
+                                    measurements.Add((string)data["strMeasure" + i]);
+                                }
+                            }
+
+                            ingredients = ingredients.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                            measurements = measurements.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                        }
+                        else
+                        {
+                            getDataError = true;
+                            Console.WriteLine("No Data Found");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            getDataError = true;
+            Console.WriteLine("Exception Hit");
+            Console.Write(exception);
+        }
+    }
 }

@@ -1,0 +1,32 @@
+﻿#instructionsBox {
+    width: auto;
+    height: auto;
+    padding: 30px;
+    margin: 30px 20px 30px 20px;
+    background: linear-gradient(white, white) padding-box, linear-gradient(0deg, rgba(238, 174, 174, 1) 0%, rgba(233, 211, 148, 1) 100%) border-box;
+    border: 15px solid transparent;
+    border-radius: 35px;
+}
+h1 {
+    font-family: Consolas;
+    font-size: 65px;
+    font-weight: 600;
+}
+li {
+    margin-left: 20px;
+    font-size: 18px;
+}
+table {
+    width: 40%;
+}
+#imageBox {
+    text-align: center;
+}
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: space-around;
+    margin-bottom: 30px;
+    gap: 30px;
+}

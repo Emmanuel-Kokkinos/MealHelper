@@ -1,8 +1,6 @@
 ﻿@page "/details/{mealId}"
 @using Newtonsoft.Json.Linq
-@rendermode InteractiveServer
-
-<h3>Details</h3>
+@rendermode @(new InteractiveServerRenderMode(false))
 
 @if (mealId is null)
 {
@@ -10,18 +8,39 @@
 }
 else
 {
-    <p>@name</p>
-    <p>@foodLocation</p>
-    <p>@cookingInstructions</p>
-    <img src="@image"/>
-    @for (int i = 0; i < ingredients.Count; i++)
-    {
-        <li>@ingredients[i]</li>
-    }
-    @for (int i = 0; i < measurements.Count; i++)
-    {
-        <li>@measurements[i]</li>
-    }
+    <h1>@name</h1>
+    <p>Type: @foodLocation</p>
+    <div id="instructionsBox">
+        @for (int i = 0; i < cookingInstructions.Count - 1; i++)
+        {
+            <li>@cookingInstructions[i].</li>
+        }
+    </div>
+    <div id="container">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Ingredient</th>
+                    <th scope="col">Measurement</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < ingredients.Count; i++)
+                {
+                    <tr>
+                        <td>@ingredients[i]</td>
+                        @if (@measurements.ElementAtOrDefault(i) is not null)
+                        {
+                           <td>@measurements[i]</td> 
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div id="imageBox">
+            <img src="@image" />
+        </div>
+    </div>
 }
 
 @code {
@@ -30,8 +49,8 @@ else
     public string mealId { get; set; }
     private string? name;
     private string? foodLocation;
-    private string? cookingInstructions;
     private string? image;
+    private List<string>? cookingInstructions = new List<string>();
     private List<string>? ingredients = new List<string>();
     private List<string>? measurements = new List<string>();
 
@@ -62,8 +81,9 @@ else
                             {
                                 name = (string)data["strMeal"];
                                 foodLocation = (string)data["strArea"];
-                                cookingInstructions = (string)data["strInstructions"];
                                 image = (string)data["strMealThumb"];
+                                var instructions = (string)data["strInstructions"];
+                                cookingInstructions = instructions.Split(".").ToList();
 
                                 for(int i = 1; i <= 20; i++)
                                 {

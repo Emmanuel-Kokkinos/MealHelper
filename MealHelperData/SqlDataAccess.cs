@@ -19,7 +19,7 @@ namespace MealHelperData
             _config = config;
         }
 
-        public async Task<List<T>> LoadData<T, U>(string sql, U parameters)
+        public async Task<List<T>> LoadMeals<T, U>(string sql, U parameters)
         {
             string connectionString = _config.GetConnectionString(ConnectionStringName);
 
@@ -31,7 +31,29 @@ namespace MealHelperData
             }
         }
 
-        public async Task SaveData<T>(string sql, T parameters)
+        public async Task SaveMeals<T>(string sql, T parameters)
+        {
+            string connectionString = _config.GetConnectionString(ConnectionStringName);
+
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.ExecuteAsync(sql, parameters);
+            }
+        }
+
+        public async Task<List<T>> LoadIngredients<T, U>(string sql, U parameters)
+        {
+            string connectionString = _config.GetConnectionString(ConnectionStringName);
+
+            using (IDbConnection connection = new SqlConnection(connectionString))
+            {
+                var data = await connection.QueryAsync<T>(sql, parameters);
+
+                return data.ToList();
+            }
+        }
+
+        public async Task SaveIngredients<T>(string sql, T parameters)
         {
             string connectionString = _config.GetConnectionString(ConnectionStringName);
 

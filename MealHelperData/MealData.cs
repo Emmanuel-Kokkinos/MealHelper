@@ -20,7 +20,7 @@ namespace MealHelperData
         {
             string sql = "select * from dbo.Meals where Favorite = 1;";
 
-            return _db.LoadData<MealModel, dynamic>(sql, new { });
+            return _db.LoadMeals<MealModel, dynamic>(sql, new { });
         }
 
         public Task UpdateFavoriteMeal(MealModel meal)
@@ -30,14 +30,14 @@ namespace MealHelperData
                          WHEN MATCHED THEN UPDATE SET Favorite = source.Favorite
                          WHEN NOT MATCHED THEN INSERT (MealId, Favorite) VALUES (source.MealId, source.Favorite);";
 
-            return _db.SaveData(sql, meal);
+            return _db.SaveMeals(sql, meal);
         }
 
         public Task<List<MealModel>> CheckFavorite(MealModel meal)
         {
             string sql = @"SELECT * FROM dbo.Meals 
                            WHERE MealId=" + meal.MealId + ";";
-            return _db.LoadData<MealModel, dynamic>(sql, new { });
+            return _db.LoadMeals<MealModel, dynamic>(sql, new { });
         }
     }
 }

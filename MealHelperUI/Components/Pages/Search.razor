@@ -57,18 +57,24 @@ else
     private string? foodIngredient;
     private bool getDataError;
     private List<Meal> meals = new List<Meal>();
+    private List<string>? tempIngredients = new List<string>();
+    private List<string>? tempMeasurements = new List<string>();
 
     public class Meal
     {
         public string name { get; set; }
         public string image { get; set; }
         public string mealId { get; set; }
+        public List<string> ingredients { get; set; } = new List<string>();
+        public List<string> measurements { get; set; } = new List<string>();
 
-        public Meal(string name, string image, string mealId)
+        public Meal(string name, string image, string mealId, List<string> ingredients, List<string> measurements)
         {
             this.name = name;
             this.image = image;
             this.mealId = mealId;
+            this.ingredients = ingredients;
+            this.measurements = measurements;
         }
     }
 
@@ -118,8 +124,22 @@ else
 
                             foreach (var data in parsedData["meals"])
                             {
-                                meals.Add(new Meal((string)data["strMeal"], 
-                                    (string)data["strMealThumb"], (string)data["idMeal"]));
+                                for (int i = 1; i <= 20; i++)
+                                {
+                                    tempIngredients.Add((string)data["strIngredient" + i]);
+                                    tempMeasurements.Add((string)data["strMeasure" + i]);
+                                }
+
+                                tempIngredients = tempIngredients.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                                tempMeasurements = tempMeasurements.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+
+                                meals.Add(new Meal(
+                                    (string)data["strMeal"],
+                                    (string)data["strMealThumb"],
+                                    (string)data["idMeal"],
+                                    tempIngredients,
+                                    tempMeasurements
+                                ));
                             }
                         }
                         else

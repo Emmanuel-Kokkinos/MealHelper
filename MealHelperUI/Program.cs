@@ -12,6 +12,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 builder.Services.AddTransient<ISqlDataAccess, SqlDataAccess>();
 builder.Services.AddTransient<IMealData, MealData>();
+builder.Services.AddTransient<IIngredientData, IngredientData>();
 builder.Services.AddHttpClient();
 builder.Services
     .AddBlazorise(options =>

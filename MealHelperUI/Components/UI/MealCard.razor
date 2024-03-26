@@ -1,7 +1,9 @@
 ﻿@using MealHelperData;
 @using MealHelperData.Models;
+@using Newtonsoft.Json.Linq
 
 @inject IMealData _db;
+@inject IIngredientData _ingredientDb;
 
 <div id="container">
     <div class="card m-4">
@@ -23,6 +25,9 @@
     public string mealImage { get; set; }
     [Parameter]
     public string mealId { get; set; }
+    private List<string>? ingredients = new List<string>();
+    private List<string>? measurements = new List<string>();
+    private bool getDataError;
     private bool favorited;
 
     protected override async Task OnInitializedAsync()
@@ -41,6 +46,54 @@
         else
         {
             favorited = false;
+        }
+
+        GetData(meal);
+    }
+
+    public async Task GetData(MealModel meal)
+    {
+        string apiUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + meal.MealId;
+        try
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                using (HttpResponseMessage res = await client.GetAsync(apiUrl))
+                {
+                    using (HttpContent content = res.Content)
+                    {
+                        var jsonData = await content.ReadAsStringAsync();
+
+                        if (jsonData != null)
+                        {
+                            JObject parsedData = JObject.Parse(jsonData);
+
+                            foreach (var data in parsedData["meals"])
+                            {
+                                for (int i = 1; i <= 20; i++)
+                                {
+                                    ingredients.Add((string)data["strIngredient" + i]);
+                                    measurements.Add((string)data["strMeasure" + i]);
+                                }
+
+                                ingredients = ingredients.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                                measurements = measurements.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+                            }
+                        }
+                        else
+                        {
+                            getDataError = true;
+                            Console.WriteLine("No Data Found");
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            getDataError = true;
+            Console.WriteLine("Exception Hit");
+            Console.Write(exception);
         }
     }
 
@@ -74,8 +127,20 @@
         return Task.CompletedTask;
     }
 
-    private void AddToShoppingList()
+    private Task AddToShoppingList()
     {
+        for(int i = 0; i < ingredients.Count; i++)
+        {
+            IngredientModel ingredientsModel = new IngredientModel
+                {
+                    MealId = Int32.Parse(mealId),
+                    IngredientName = ingredients.ElementAt(i),
+                    IngredientAmount = measurements.ElementAtOrDefault(i)
+                };
 
+            _ingredientDb.AddShoppingIngredients(ingredientsModel);
+        }
+
+        return Task.CompletedTask;
     }
 }

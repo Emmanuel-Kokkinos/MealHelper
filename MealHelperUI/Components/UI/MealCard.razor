@@ -134,6 +134,7 @@
             IngredientModel ingredientsModel = new IngredientModel
                 {
                     MealId = Int32.Parse(mealId),
+                    MealName = mealName,
                     IngredientName = ingredients.ElementAt(i),
                     IngredientAmount = measurements.ElementAtOrDefault(i)
                 };

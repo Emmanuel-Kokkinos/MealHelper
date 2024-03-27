@@ -10,6 +10,7 @@ namespace MealHelperData.Models
     {
         public int Id { get; set; }
         public int MealId { get; set; }
+        public string MealName { get; set; }
         public string IngredientName { get; set; }
         public string? IngredientAmount { get; set; }
     }

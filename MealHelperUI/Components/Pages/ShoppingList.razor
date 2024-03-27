@@ -1,8 +1,57 @@
 ﻿@page "/shoppingList"
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(false))
 
-<h3>Shopping List</h3>
+@using MealHelperData;
+@using MealHelperData.Models;
+
+@inject IIngredientData _db;
+
+<h1>Shopping List</h1>
+
+@if (dbIngredients is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="container">
+        <div class="header">
+            <div class="deleteButton"></div>
+            <div class="column">Ingredient</div>
+            <div class="column">Measurement</div>
+            <div class="column">Meal</div>
+        </div>
+        @foreach (var ingredient in dbIngredients)
+        {
+            <div class="row">
+                <div class="deleteButton"><button class="btn-danger" @onclick="() => DeleteFromShoppingList(ingredient)">X</button></div>
+                <div class="column">@ingredient.IngredientName</div>
+                @if (@ingredient.IngredientAmount is not null)
+                {
+                    <div class="column">@ingredient.IngredientAmount</div>
+                }
+                else
+                {
+                    <div class="column"></div>
+                }
+                <div class="column">@ingredient.MealName</div>
+            </div>
+        }
+    </div>
+}
 
 @code {
+    private List<IngredientModel> dbIngredients = new List<IngredientModel>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        dbIngredients = await _db.GetShoppingIngredients();
+    }
+
+    private Task DeleteFromShoppingList(IngredientModel ingredient)
+    {
+        _db.DeleteShoppingIngredients(ingredient);
+        dbIngredients.Remove(ingredient);
+        return Task.CompletedTask;
+    }
 }

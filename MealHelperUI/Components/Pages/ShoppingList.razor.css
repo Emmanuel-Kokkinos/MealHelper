@@ -1,2 +1,39 @@
-﻿body {
+﻿.container {
+    width: 80%;
+    margin-top: 30px;
+}
+.row {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px;
+}
+
+.row:hover {
+    background-color: aliceblue;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 100%;
+    flex: 1;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 5px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.deleteButton {
+    display: flex;
+    flex-direction: column;
+    width: 50px;
+    padding-right: 20px;
 }

@@ -25,8 +25,8 @@ namespace MealHelperData
 
         public Task AddShoppingIngredients(IngredientModel ingredients)
         {
-            string sql = @"INSERT INTO dbo.Ingredients (MealId, IngredientName, IngredientAmount)
-                           VALUES (@MealId, @IngredientName, @IngredientAmount);";
+            string sql = @"INSERT INTO dbo.Ingredients (MealId, MealName, IngredientName, IngredientAmount)
+                           VALUES (@MealId, @MealName, @IngredientName, @IngredientAmount);";
 
             return _db.SaveIngredients(sql, ingredients);
         }
